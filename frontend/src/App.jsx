@@ -1,4 +1,3 @@
-import { useState } from "react";
 import React, { Suspense, lazy } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
@@ -41,7 +40,6 @@ const Layout = ({ children }) => {
 };
 
 function App() {
-  const [count, setCount] = useState(0);
 
   return (
     <>
