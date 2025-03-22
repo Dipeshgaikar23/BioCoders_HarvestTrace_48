@@ -3,7 +3,7 @@ const Consumer = require("../models/Consumers.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// const { protect, consumerOnly } = require("../middleware/authMiddleware");
+const { protect, consumerOnly } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -66,7 +66,7 @@ router.post("/login", async (req, res) => {
 });
 
 // 🔹 Get Consumer Profile (Protected Route)
-router.get("/profile",  async (req, res) => {
+router.get("/profile", protect, consumerOnly, async (req, res) => {
   try {
     const consumer = await Consumer.findById(req.user.id).select("-password");
     if (!consumer) {
@@ -81,6 +81,64 @@ router.get("/profile",  async (req, res) => {
 
 //----------------------CART ROUTES-----------------------
 
+/** 📌 1️⃣ Save Cart to Backend on Logout */
+router.post("/cart/save", protect, consumerOnly, async (req, res) => {
+  try {
+    const { cart } = req.body;
+    const consumer = await Consumer.findById(req.user.id);
+
+    if (!consumer) return res.status(404).json({ message: "Consumer not found" });
+
+    consumer.cart = cart;
+    await consumer.save();
+
+    res.json({ message: "Cart saved successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error", error: err.message });
+  }
+});
+
+/** 📌 3️⃣ Fetch Cart */
+router.get("/cart", protect, consumerOnly, async (req, res) => {
+  try {
+     const consumer = await Consumer.findById(req.user.id)
+      .populate({
+        path: "cart.product",
+        select: "name price imageUrl", // Ensure imageUrl is included
+      });
+
+    if (!consumer) return res.status(404).json({ message: "Consumer not found" });
+
+    res.json(consumer.cart);
+  } catch (err) {
+    res.status(500).json({ message: "Server Error", error: err.message });
+  }
+});
+
+router.post("/cart/add", protect, consumerOnly, async (req, res) => {
+  try {
+    const { productId, quantity } = req.body;
+    const consumer = await Consumer.findById(req.user.id);
+
+    if (!consumer) return res.status(404).json({ message: "Consumer not found" });
+
+    // Check if product is already in cart
+    const existingItem = consumer.cart.find((item) => item.product.toString() === productId);
+
+    if (existingItem) {
+      // Update quantity
+      existingItem.quantity += quantity;
+    } else {
+      // Add new item
+      consumer.cart.push({ product: productId, quantity });
+    }
+
+    await consumer.save();
+    res.json({ message: "Cart updated successfully", cart: consumer.cart });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error", error: err.message });
+  }
+});
 
 
 module.exports = router;
