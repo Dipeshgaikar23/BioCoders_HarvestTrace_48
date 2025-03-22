@@ -150,7 +150,7 @@ const ThreeJSBackground = () => {
         position: "absolute",
         top: 0,
         left: 0,
-        width: "100vw",
+        width: "98.9vw",
         height: "100vh",
         zIndex: -1,
         pointerEvents: "none",
