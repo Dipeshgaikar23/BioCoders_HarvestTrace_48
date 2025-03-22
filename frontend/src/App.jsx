@@ -14,6 +14,7 @@ import CTASection from "./components/CTAsection";
 import AuthForm from "./components/AuthForm";
 import Login from "./components/Login";
 import Footer from "./components/Footer"; // Footer stays only on Home & Marketplace
+import Marketplace from "./components/Marketplace";
 
 const HomePage = () => (
   <>
@@ -48,7 +49,7 @@ function App() {
         <Suspense fallback={<div className="text-center mt-5">Loading...</div>}>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/marketplace" />
+            <Route path="/marketplace" element={<Marketplace/>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<AuthForm />} />
           </Routes>
