@@ -12,13 +12,12 @@ import Login from "./components/Login";
 import Marketplace from "./components/Marketplace";
 import Footer from "./components/Footer"; // Footer stays only on Home & Marketplace
 import Cart from "./components/Cart";
-import Invoice from "./components/Invoice";
-import OrderConfirm from "./components/OrderConfirm";
-import UserProfile from "./components/UserProfile";
+// import Invoice from "./components/Invoice";
+// import OrderConfirm from "./components/OrderConfirm";
+// import UserProfile from "./components/UserProfile";
 import ProductCard from "./components/ProductCard";
-import Qrscanned from "./components/QrScanned";
-import ProductListTest from "./components/ProductListTest";
-import PaymentGateway from "./components/PaymentGateway";
+// import Qrscanned from "./components/QrScanned";
+// import PaymentGateway from "./components/PaymentGateway";
 import AdminLogin from "./components/adminLogin";
 import AdminDashboard from "./components/AdminDashboard";
 
@@ -60,16 +59,16 @@ const App = () => {
           <Route path="/ObviouslyNotAdmin/login" element={<AdminLogin />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/invoice" element={<Invoice />} />
           <Route path="/AdminDashboard" element={<AdminDashboard />} />{" "}
-          <Route path="/orderconfirm" element={<OrderConfirm />} />{" "}
-          <Route path="/userprofile" element={<UserProfile />} />{" "}
-          <Route path="/payment" element={<PaymentGateway />} />{" "}
+          {/* <Route path="/invoice" element={<Invoice />} /> */}
+          {/* <Route path="/orderconfirm" element={<OrderConfirm />} />{" "} */}
+          {/* <Route path="/userprofile" element={<UserProfile />} />{" "} */}
+          {/* <Route path="/payment" element={<PaymentGateway />} />{" "} */}
           <Route
             path="/marketplace"
             element={<ProductCard product={{ id: 1 }} />}
           />
-          <Route path="/product/:id" element={<Qrscanned />} />
+          {/* <Route path="/product/:id" element={<Qrscanned />} /> */}
           {/* ✅ Lazy Loaded */}
         </Routes>
       </Suspense>
