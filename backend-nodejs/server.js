@@ -7,9 +7,8 @@ const connectDB = require("./config/db");
 
 const farmerRoutes = require("./routes/Farmer.Routes");
 const consumerRoutes = require("./routes/Consumer.Routes");
-const productRoutes = require("./routes/Product.Routes");
-const adminRoutes = require("./routes/Admin.Routes");
-const orderRoutes = require("./routes/Order.Routes");
+
+
 
 // Initialize Express App
 const app = express();
@@ -22,9 +21,7 @@ app.use(cors()); // Handle Cross-Origin requests
 // Routes
 app.use("/farmers", farmerRoutes); // Use Farmer Routes
 app.use("/consumer", consumerRoutes); // Use Consumer Routes
-app.use("/products", productRoutes); // Use Product Routes
-app.use("/ObviouslyNotAdmin", adminRoutes); // Use Admin Routes
-app.use("/orders", orderRoutes); // Use Order Routes
+
 
 // Connect to Database
 connectDB();

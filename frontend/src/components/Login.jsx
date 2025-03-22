@@ -44,7 +44,7 @@ const Login = () => {
         const { token } = farmerResponse.value.data;
         localStorage.setItem("token", token);
         localStorage.setItem("userRole", "farmer");
-        navigate("/farmer-dashboard");
+        navigate("/#farmer-dashboard");
       } else {
         throw new Error("Invalid email or password.");
       }

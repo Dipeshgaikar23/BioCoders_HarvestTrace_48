@@ -88,7 +88,7 @@ const Header = () => {
             </li>
             <li className="nav-item">
               <Link
-                to="/#marketplace"
+                to="/marketplace"
                 className={`nav-link text-black ${
                   location.pathname === "/marketplace" ? "active" : ""
                 }`}
