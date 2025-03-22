@@ -4,12 +4,12 @@ import { Routes, Route, useLocation } from "react-router-dom";
 // import reactLogo from "./assets/react.svg";
 // import viteLogo from "/vite.svg";
 import "./App.css";
-import Header from "./components/header";
+import Header from "./components/Header";
 import Hero from "./components/Hero";
 import ThreeJSBackground from "./components/ThreeJSBackground";
 import FeatureCards from "./components/FeatureCards";
 import Testimonials from "./components/Testimonials";
-import CTASection from "./components/CTAsection";
+import CTASection from "./components/CTASection";
 import AuthForm from "./components/AuthForm";
 import Login from "./components/Login";
 import Footer from "./components/Footer"; // Footer stays only on Home & Marketplace
