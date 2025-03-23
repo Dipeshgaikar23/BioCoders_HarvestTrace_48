@@ -110,11 +110,12 @@ const Marketplace = () => {
 
 
   useEffect(() => {
-    axios.get("http://localhost:5000/products") // Adjust URL based on your backend
-      .then(response => {
+    axios
+      .get("http://localhost:5000/products") // Adjust URL based on your backend
+      .then((response) => {
         setProducts(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error fetching products:", error);
       });
   }, []);
@@ -163,8 +164,9 @@ const Marketplace = () => {
           {/* Filters Sidebar */}
           <Col
             md={3}
-            className={`bg-white p-4 rounded shadow ${isFilterOpen ? "d-block" : "d-none d-md-block"
-              }`}
+            className={`bg-white p-4 rounded shadow ${
+              isFilterOpen ? "d-block" : "d-none d-md-block"
+            }`}
           >
             <div className="d-flex justify-content-between">
               <h4 className="mb-3">Filters</h4>
@@ -265,7 +267,9 @@ const Marketplace = () => {
                     <Card.Body>
                       <Card.Title>{product.name}</Card.Title>
                       <Card.Text>₹{product.price} / Kg</Card.Text>
-                      <Card.Text className="text-muted">{product.farmer.name}</Card.Text>
+                      <Card.Text className="text-muted">
+                        {product.farmer.name}
+                      </Card.Text>
 
                       {/* Quantity Input Field */}
                       <InputGroup className="mb-2">
@@ -277,7 +281,11 @@ const Marketplace = () => {
                         />
                       </InputGroup>
 
-                      <Button onClick={() => addToCart(product._id)} variant="success" className="w-100">
+                      <Button
+                        onClick={() => addToCart(product._id)}
+                        variant="success"
+                        className="w-100"
+                      >
                         {addedToCart[product._id] ? "✔ Added" : "Add to Cart"}
                       </Button>
                     </Card.Body>

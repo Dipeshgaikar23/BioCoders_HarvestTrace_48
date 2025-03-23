@@ -141,7 +141,12 @@ const AuthForm = () => {
   return (
     <div className="auth-container">
       {/* ✅ Toggle Buttons for Switching Between Farmer & Consumer */}
-      <div className="toggle-buttons d-flex justify-content-center mb-4">
+      <h2>
+        {userType === "farmer"
+          ? "Farmer Registration"
+          : "Consumer Registration"}
+      </h2>
+      <div className="toggle-buttons d-flex justify-content-center my-4">
         <button
           className={`btn ${
             userType === "farmer" ? "btn-success" : "btn-outline-success"
@@ -161,12 +166,6 @@ const AuthForm = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="form">
-        <h2>
-          {userType === "farmer"
-            ? "Farmer Registration"
-            : "Consumer Registration"}
-        </h2>
-
         <div className="form-group">
           <label>Full Name</label>
           <input
@@ -228,7 +227,7 @@ const AuthForm = () => {
                 <button
                   type="button"
                   className={`btn ${
-                    !useCurrentLocation ? "btn-success" : "btn-outline-success"
+                    !useCurrentLocation ? `btn-success` : `btn-outline-success`
                   }`}
                   onClick={() => setUseCurrentLocation(false)}
                 >

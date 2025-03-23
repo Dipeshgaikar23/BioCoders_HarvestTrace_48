@@ -36,7 +36,7 @@ const Login = () => {
         localStorage.setItem("token", token);
         localStorage.setItem("userRole", "consumer");
         navigate("/marketplace");
-        window.location.reload(); 
+        window.location.reload();
       } else if (
         farmerResponse.status === "fulfilled" &&
         farmerResponse.value.data.token
@@ -44,7 +44,7 @@ const Login = () => {
         const { token } = farmerResponse.value.data;
         localStorage.setItem("token", token);
         localStorage.setItem("userRole", "farmer");
-        navigate("/#farmer-dashboard");
+        navigate("/farmerdashboard");
       } else {
         throw new Error("Invalid email or password.");
       }

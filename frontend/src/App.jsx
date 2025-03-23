@@ -6,7 +6,7 @@ import Hero from "./components/Hero";
 import FeatureCards from "./components/FeatureCards";
 import Testimonials from "./components/Testimonials";
 import CTASection from "./components/CTAsection";
-import Checkout from "./components/Checkout";
+// import Checkout from "./components/Checkout";
 import AuthForm from "./components/AuthForm";
 import Login from "./components/Login";
 import Marketplace from "./components/Marketplace";
@@ -20,6 +20,7 @@ import ProductCard from "./components/ProductCard";
 // import PaymentGateway from "./components/PaymentGateway";
 import AdminLogin from "./components/adminLogin";
 import AdminDashboard from "./components/AdminDashboard";
+import FarmerDashboard from "./components/FarmerDashboard";
 
 // Home Page Layout
 const HomePage = () => (
@@ -53,13 +54,14 @@ const App = () => {
       <Suspense fallback={<div className="text-center mt-5">Loading...</div>}>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/checkout" element={<Checkout />} />
+          {/* <Route path="/checkout" element={<Checkout />} /> */}
           <Route path="/register" element={<AuthForm />} />
           <Route path="/login" element={<Login />} />
           <Route path="/ObviouslyNotAdmin/login" element={<AdminLogin />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/AdminDashboard" element={<AdminDashboard />} />{" "}
+          <Route path="/farmerdashboard" element={<FarmerDashboard />} />{" "}
           {/* <Route path="/invoice" element={<Invoice />} /> */}
           {/* <Route path="/orderconfirm" element={<OrderConfirm />} />{" "} */}
           {/* <Route path="/userprofile" element={<UserProfile />} />{" "} */}
