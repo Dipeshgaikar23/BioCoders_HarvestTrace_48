@@ -187,6 +187,7 @@ const ShoppingCart = () => {
     maxWidth: '90%',
     marginLeft: 'auto',
     marginRight: 'auto',
+    marginTop: '100px',
     padding: '0',
     boxSizing: 'border-box'
   };

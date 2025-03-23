@@ -22,10 +22,11 @@ const Header = () => {
   }, []);
 
   const handleLogout = async () => {
+    navigate("/");
     localStorage.removeItem("token");
     localStorage.removeItem("userRole");
     window.location.reload();
-    navigate("/");
+    
   };
 
   return (

@@ -12,8 +12,11 @@ const AuthForm = () => {
     location: "",
     document: null,
     password: "",
+    longitude: null,
+    latitude: null  ,
   });
-
+  console.log(formData);
+  
   const [useCurrentLocation, setUseCurrentLocation] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
   const navigate = useNavigate();
@@ -26,7 +29,17 @@ const AuthForm = () => {
         async (position) => {
           const { latitude, longitude } = position.coords;
           const address = await reverseGeocode(latitude, longitude);
-          setFormData({ ...formData, location: address });
+          setFormData((prevData) => ({
+            ...prevData,
+            location: address,
+            latitude: latitude.toString(),
+            longitude: longitude.toString()
+          }));
+          console.log("Updated formData:", {
+            latitude: latitude.toString(),
+            longitude: longitude.toString(),
+            location: address,
+          });
           setLoadingLocation(false);
         },
         (error) => {
@@ -60,23 +73,61 @@ const AuthForm = () => {
 
   // Handle file upload
   const handleFileChange = (e) => {
-    setFormData({ ...formData, document: e.target.files[0] });
+    setFormData({ ...formData, document: e.target.files });
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const apiUrl =
-      userType === "farmer"
-        ? "http://localhost:5000/farmers/register"
-        : "http://localhost:5000/consumer/register";
+    console.log("Final formData before submission:", formData);
+
+    if (!formData.longitude || !formData.latitude) {
+      alert("Please fetch your location before submitting.");
+      return;
+    }
+
+    const apiUrl = userType === "farmer"
+      ? "http://localhost:5000/farmers/register"
+      : "http://localhost:5000/consumer/register";
+
+    let formDataToSend;
+
+    if (userType === "farmer") {
+      // Use FormData for farmers because they upload files
+      formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("phone", formData.phone);
+      formDataToSend.append("password", formData.password);
+      formDataToSend.append("address", formData.location); // Farm location
+      formDataToSend.append("longitude", parseFloat(formData.longitude));
+      formDataToSend.append("latitude", parseFloat(formData.latitude));
+
+      // Append multiple files
+      for (let i = 0; i < formData.document.length; i++) {
+        formDataToSend.append("documents", formData.document[i]);
+      }
+    } else {
+      // Use JSON for consumers (no file uploads)
+      formDataToSend = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        longitude: formData.longitude,
+        latitude: formData.latitude
+      };
+    }
+
+    console.log("Submitting data:", formDataToSend);
+
 
     try {
-      await axios.post(apiUrl, formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await axios.post(apiUrl, formDataToSend, {
+        headers: userType === "farmer"
+          ? { "Content-Type": "multipart/form-data" } // For file uploads
+          : { "Content-Type": "application/json" } // For consumers
       });
 
       alert(`${userType.toUpperCase()} Registered Successfully!`);
@@ -198,13 +249,7 @@ const AuthForm = () => {
 
             <div className="form-group">
               <label>Upload Document for Verification</label>
-              <input
-                type="file"
-                className="form-control"
-                required
-                accept="image/*,application/pdf"
-                onChange={handleFileChange}
-              />
+              <input type="file" className="form-control" required multiple onChange={handleFileChange} />
             </div>
           </>
         )}

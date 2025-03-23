@@ -9,8 +9,8 @@ const CTASection = () => {
       <h2 className="display-4">Join Our Growing Community</h2>
       <p className="lead">Whether you're a natural farmer looking for fair markets or a consumer seeking authentic natural products, HarvestTrace connects you to a transparent food ecosystem.</p>
       <div className="mt-4">
-        <button className="btn btn-success me-2" onClick={() => navigate('/checkout')}>Join as Farmer</button>
-        <button className="btn btn-outline-success">Shop as Consumer</button>
+        <button className="btn btn-success me-2" onClick={() => navigate('/signup')}>Join as Farmer</button>
+        <button className="btn btn-outline-success" onClick={() => navigate('/signup')} >Shop as Consumer</button>
       </div>
     </section>
   );

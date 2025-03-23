@@ -136,7 +136,6 @@ router.get("/all", protect, adminOnly, async (req, res) => {
       });
 
     res.json(orders);
-    console.log(orders);
     
   } catch (err) {
     res.status(500).json({ message: "Server Error", error: err.message });
