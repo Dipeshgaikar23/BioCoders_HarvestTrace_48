@@ -37,31 +37,7 @@ const Header = () => {
       >
         {/* Logo */}
         <div className="d-flex align-items-center">
-          <svg
-            width="40"
-            height="40"
-            viewBox="0 0 40 40"
-            className="fill-current text-white"
-          >
-            <circle cx="20" cy="20" r="18" />
-            <path
-              d="M20 5 L20 35 M5 20 L35 20"
-              stroke="white"
-              strokeWidth="3"
-            />
-            <path
-              d="M12 12 A 10 10 0 0 1 28 12"
-              stroke="white"
-              fill="transparent"
-              strokeWidth="2"
-            />
-            <path
-              d="M12 28 A 10 10 0 0 0 28 28"
-              stroke="white"
-              fill="transparent"
-              strokeWidth="2"
-            />
-          </svg>
+          <img src="/logo.png" alt="" style={{ height: "3rem" }} />
           <h1 className="ms-2 text-black">HarvestTrace</h1>
         </div>
 
