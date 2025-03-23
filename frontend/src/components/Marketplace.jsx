@@ -35,7 +35,6 @@ const Marketplace = () => {
   const [selectedSuppliers, setSelectedSuppliers] = useState([]);
   const [sortOption, setSortOption] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  
 
   const categories = getUniqueValues(products, "category");
   const suppliers = getUniqueValues(products, "supplier");
@@ -112,7 +111,6 @@ const Marketplace = () => {
       console.error("Error adding to cart:", error);
     }
   };
-
 
   useEffect(() => {
     axios

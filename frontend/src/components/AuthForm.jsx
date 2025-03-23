@@ -13,10 +13,10 @@ const AuthForm = () => {
     document: null,
     password: "",
     longitude: null,
-    latitude: null  ,
+    latitude: null,
   });
   console.log(formData);
-  
+
   const [useCurrentLocation, setUseCurrentLocation] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const AuthForm = () => {
             ...prevData,
             location: address,
             latitude: latitude.toString(),
-            longitude: longitude.toString()
+            longitude: longitude.toString(),
           }));
           console.log("Updated formData:", {
             latitude: latitude.toString(),
@@ -87,9 +87,10 @@ const AuthForm = () => {
       return;
     }
 
-    const apiUrl = userType === "farmer"
-      ? "http://localhost:5000/farmers/register"
-      : "http://localhost:5000/consumer/register";
+    const apiUrl =
+      userType === "farmer"
+        ? "http://localhost:5000/farmers/register"
+        : "http://localhost:5000/consumer/register";
 
     let formDataToSend;
 
@@ -116,18 +117,18 @@ const AuthForm = () => {
         phone: formData.phone,
         password: formData.password,
         longitude: formData.longitude,
-        latitude: formData.latitude
+        latitude: formData.latitude,
       };
     }
 
     console.log("Submitting data:", formDataToSend);
 
-
     try {
       const response = await axios.post(apiUrl, formDataToSend, {
-        headers: userType === "farmer"
-          ? { "Content-Type": "multipart/form-data" } // For file uploads
-          : { "Content-Type": "application/json" } // For consumers
+        headers:
+          userType === "farmer"
+            ? { "Content-Type": "multipart/form-data" } // For file uploads
+            : { "Content-Type": "application/json" }, // For consumers
       });
 
       alert(`${userType.toUpperCase()} Registered Successfully!`);
@@ -217,6 +218,7 @@ const AuthForm = () => {
                     setUseCurrentLocation(true);
                     fetchCurrentLocation();
                   }}
+                  style={{ marginTop: "8px" }}
                   disabled={loadingLocation}
                 >
                   {loadingLocation
@@ -230,6 +232,7 @@ const AuthForm = () => {
                     !useCurrentLocation ? `btn-success` : `btn-outline-success`
                   }`}
                   onClick={() => setUseCurrentLocation(false)}
+                  style={{ marginTop: "8px" }}
                 >
                   Enter Manually
                 </button>
@@ -249,7 +252,13 @@ const AuthForm = () => {
 
             <div className="form-group">
               <label>Upload Document for Verification</label>
-              <input type="file" className="form-control" required multiple onChange={handleFileChange} />
+              <input
+                type="file"
+                className="form-control"
+                required
+                multiple
+                onChange={handleFileChange}
+              />
             </div>
           </>
         )}

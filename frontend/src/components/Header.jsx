@@ -26,7 +26,6 @@ const Header = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userRole");
     window.location.reload();
-    
   };
 
   return (
@@ -153,17 +152,6 @@ const Header = () => {
                 Marketplace
               </Link>
             </li>
-            {isAdmin && (
-              <li>
-                <Link
-                  to="/admin"
-                  className={location.pathname === "/admin" ? "active" : ""}
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  Admin
-                </Link>
-              </li>
-            )}
           </ul>
           {/* Log In & Sign Up Buttons Inside Sidebar */}
           <div className="sidebar-buttons">

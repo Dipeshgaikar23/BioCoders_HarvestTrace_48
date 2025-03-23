@@ -25,7 +25,7 @@ const HomePage = () => (
     initial={{ opacity: 0, y: 20 }} // Starts invisible, moves up
     animate={{ opacity: 1, y: 0 }} // Fades in & moves into position
     exit={{ opacity: 0, y: -20 }} // Moves up & disappears
-    transition={{ duration: 0.5 }} // Animation duration
+    transition={{ duration: 0.3 }} // Animation duration
   >
     <Hero />
     <FeatureCards />
