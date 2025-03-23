@@ -35,7 +35,6 @@ const Marketplace = () => {
   const [selectedSuppliers, setSelectedSuppliers] = useState([]);
   const [sortOption, setSortOption] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  
 
   const categories = getUniqueValues(products, "category");
   const suppliers = getUniqueValues(products, "supplier");
@@ -108,7 +107,6 @@ const Marketplace = () => {
     }
   };
 
-
   useEffect(() => {
     axios
       .get("http://localhost:5000/products") // Adjust URL based on your backend
@@ -142,7 +140,6 @@ const Marketplace = () => {
           // backgroundColor: "rgba(0, 0, 0, 0.60)",
         }}
       >
-        <img src="/vegitable-market.jpg" alt="" />
         <h1 className="fw-bold">Marketplace</h1>
         <p className="lead">Fresh from Farm to Your Table</p>
         <InputGroup className="w-50 mx-auto mt-3">
