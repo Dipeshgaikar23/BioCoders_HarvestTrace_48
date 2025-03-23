@@ -58,10 +58,6 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/approve/:id", protect, adminOnly, async (req, res) => {
-
-   const { id } = req.params;
-  
-  console.log("Received ID:", id);  // Debugging
   try {
     // Restrict access to only the hardcoded admin
     if (req.user.email !== "admin@naturalfarm.com") {
@@ -119,7 +115,6 @@ router.get("/consumers", protect, adminOnly, async (req, res) => {
   }
 });
 
-// Route to fetch all farmers
 router.get("/stats", protect, adminOnly, async (req, res) => {
   try {
     const totalFarmers = await Farmer.countDocuments({});
@@ -137,30 +132,6 @@ router.get("/stats", protect, adminOnly, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
-  }
-});
-
-
-// Route to fetch documents for verification
-router.get("/verification/:id", async (req, res) => {
-  try {
-    const farmerId = req.params.id; // Changed from req.params.farmerId to req.params.id
-    // console.log("Received request for farmer ID:", farmerId);
-
-    const farmer = await Farmer.findById(farmerId);
-    
-    if (!farmer) {
-      return res.status(404).json({ error: "Farmer not found" });
-    }
-    
-    if (!farmer.documents || farmer.documents.length === 0) {
-      return res.status(404).json({ error: "Documents not found" });
-    }
-
-    res.json({ documents: farmer.documents });
-  } catch (error) {
-    console.error("Error fetching documents:", error);
-    res.status(500).json({ error: "Server error" });
   }
 });
 

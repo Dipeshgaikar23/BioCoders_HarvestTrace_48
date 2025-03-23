@@ -17,6 +17,7 @@ import AdminDashboard from "./components/AdminDashboard";
 import FarmerDashboard from "./components/FarmerDashboard";
 import ProductCard from "./components/ProductCard";
 import "./app.css";
+import PaymentConfirmation from "./components/PaymentConfirmation";
 
 // Home Page Layout
 const HomePage = () => (
@@ -64,6 +65,14 @@ const App = () => {
               element={
                 <AnimatedPage>
                   <AuthForm />
+                </AnimatedPage>
+              }
+            />
+            <Route
+              path="/Payment"
+              element={
+                <AnimatedPage>
+                  <PaymentConfirmation />
                 </AnimatedPage>
               }
             />

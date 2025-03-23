@@ -63,7 +63,7 @@ const ThreeJSBackground = () => {
     }
 
     // Add plants in a grid pattern
-    for (let x = -100; x <= 400; x += 10) {
+    for (let x = -150; x <= 400; x += 10) {
       for (let z = -50; z <= 40; z += 10) {
         const plant = createPlant(x, z);
         scene.add(plant);

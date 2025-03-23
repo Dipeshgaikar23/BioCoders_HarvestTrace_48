@@ -1,6 +1,7 @@
 const express = require("express");
 const Order = require("../models/Order.model");
 const Product = require("../models/products.model");
+const Consumer = require("../models/Consumers.model");
 const { protect, consumerOnly, farmerOnly, adminOnly } = require("../middleware/authMiddleware");
 const mongoose = require("mongoose");
 
@@ -10,7 +11,7 @@ const router = express.Router();
 
 /**  
  *  Place a New Order  
- *  `POST /api/orders`git 
+ *  `POST /api/orders`
  *  Only consumers can place orders
  */
 router.post("/", protect, consumerOnly, async (req, res) => {
@@ -40,7 +41,7 @@ router.post("/", protect, consumerOnly, async (req, res) => {
     }
 
     const order = new Order({
-      consumer: req.user.id,
+      consumer: req.Consumer.id,
       products: orderItems, // ✅ Now contains farmer ID
       totalPrice
     });
@@ -91,39 +92,33 @@ router.get("/farmer-orders", protect, farmerOnly, async (req, res) => {
  *  `PUT /api/orders/:orderId`
  *  Only farmers can update order status
  */
-router.put("/:orderId", protect, farmerOnly, async (req, res) => {
-  try {
-    const { status } = req.body;
-    const order = await Order.findById(req.params.orderId).populate({
-      path: "products.product",
-      populate: { path: "farmer" }
-    });
+// router.put("/:orderId", protect, farmerOnly, async (req, res) => {
+//   try {
+//     const { status } = req.body;
+//     const order = await Order.findById(req.params.orderId).populate("farmer");
 
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
-    }
+//     if (!order) {
+//       return res.status(404).json({ message: "Order not found" });
+//     }
 
-    // Convert `req.user.id` to ObjectId before comparing
-    const loggedInFarmerId = new mongoose.Types.ObjectId(req.user.id);
+//      if (!order.farmer) {
+//       return res.status(400).json({ message: "Farmer data missing for this order" });
+//     }
 
-    // Check if the logged-in farmer owns any product in the order
-    const farmerOwnsProduct = order.products.some(p =>
-      (p.farmer && p.farmer.equals(loggedInFarmerId)) || 
-      (p.product && p.product.farmer && p.product.farmer._id.equals(loggedInFarmerId))
-    );
+//     res.json(order);
 
-    if (!farmerOwnsProduct) {
-      return res.status(403).json({ message: "You cannot update this order" });
-    }
+//     if (!farmerOwnsProduct) {
+//       return res.status(403).json({ message: "You cannot update this order" });
+//     }
 
-    order.status = status;
-    await order.save();
+//     order.status = status;
+//     await order.save();
 
-    res.json({ message: "Order status updated", order });
-  } catch (err) {
-    res.status(500).json({ message: "Server Error", error: err.message });
-  }
-});
+//     res.json({ message: "Order status updated", order });
+//   } catch (err) {
+//     res.status(500).json({ message: "Server Error", error: err.message });
+//   }
+// });
 
 router.get("/all", protect, adminOnly, async (req, res) => {
   try {
@@ -136,7 +131,6 @@ router.get("/all", protect, adminOnly, async (req, res) => {
       });
 
     res.json(orders);
-    
   } catch (err) {
     res.status(500).json({ message: "Server Error", error: err.message });
   }
@@ -164,6 +158,127 @@ router.get("/:orderId/invoice", protect, async (req, res) => {
     res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
+
+router.get("/test-connection", async (req, res) => {
+  try {
+    // Test database connection
+    const connectionState = mongoose.connection.readyState;
+    const connectionStatus = {
+      0: "disconnected",
+      1: "connected",
+      2: "connecting",
+      3: "disconnecting"
+    };
+    
+    return res.json({
+      databaseConnection: connectionStatus[connectionState] || "unknown",
+      message: "Connection test route"
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// Add this to check if your order ID is valid
+router.get("/validate-id/:orderId", (req, res) => {
+  const { orderId } = req.params;
+  const isValid = mongoose.Types.ObjectId.isValid(orderId);
+  
+  return res.json({
+    orderId,
+    isValid,
+    message: isValid ? "Order ID is valid" : "Order ID is invalid"
+  });
+});
+
+// Add this endpoint to your orders routes file
+// Clear route for getting a specific order
+router.get("/:orderId", async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    console.log("Fetching order with ID:", orderId);
+
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      console.log("Invalid ObjectId format");
+      return res.status(400).json({ message: "Invalid Order ID format" });
+    }
+
+    const order = await Order.findById(orderId)
+      .populate({
+        path: "products.product",
+        select: "name price imageUrl",
+      })
+      .populate("consumer", "name email phone");
+
+    if (!order) {
+      console.log("Order not found");
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    console.log("Order found:", order);
+
+    // Extract farmer details - assuming all products have the same farmer
+    const farmerId = order.products[0]?.farmer;
+    let farmer = null;
+
+    if (farmerId) {
+      farmer = await mongoose.model("Farmer").findById(farmerId)
+        .select("name address latitude longitude badges owner");
+    }
+
+    // Format the response data to match what your frontend expects
+    const response = {
+      orderId: order._id,
+      orderDate: order.createdAt,
+      totalAmount: order.totalPrice,
+      subtotal: order.totalPrice - 8.49, // Adjust calculation as needed
+      shipping: 5.99,
+      tax: 2.50,
+      status: order.status,
+      products: order.products.map((p) => ({
+        id: p.product?._id || p.product,
+        name: p.product?.name || "Product",
+        price: p.product?.price || 0,
+        image: p.product?.imageUrl || "/placeholder.jpg",
+        quantity: p.quantity,
+      })),
+      farmer: farmer ? {
+        name: farmer.name || "Local Farm",
+        owner: farmer.owner || "Farm Owner",
+        address: farmer.address || "123 Farm Road",
+        latitude: farmer.latitude || 40.7128,
+        longitude: farmer.longitude || -74.0060,
+        badges: farmer.badges || ["Organic", "Local"],
+        distance: "12.5 miles"
+      } : {
+        name: "Local Farm",
+        owner: "Farm Owner",
+        address: "123 Farm Road",
+        latitude: 40.7128,
+        longitude: -74.0060,
+        badges: ["Organic", "Local"],
+        distance: "12.5 miles"
+      },
+      payment: {
+        method: "Credit Card",
+        cardNumber: "**** **** **** 4242"
+      },
+      steps: [
+        { id: 1, title: "Order Placed", date: new Date().toLocaleDateString(), isActive: true },
+        { id: 2, title: "Processing", date: "Pending", isActive: false },
+        { id: 3, title: "Ready for Pickup", date: "Pending", isActive: false },
+        { id: 4, title: "Completed", date: "Pending", isActive: false }
+      ]
+    };
+
+    console.log("Sending response:", response);
+    return res.json(response);
+  } catch (error) {
+    console.error("Error fetching order:", error);
+    return res.status(500).json({ message: "Server error", error: error.message, stack: error.stack });
+  }
+});
+
 
 
 module.exports = router;

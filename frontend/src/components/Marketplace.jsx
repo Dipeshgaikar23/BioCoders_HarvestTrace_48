@@ -73,6 +73,11 @@ const Marketplace = () => {
   }, []);
 
   const addToCart = async (productId) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
     const quantityInput = document.getElementById(`quantity-${productId}`);
     if (!quantityInput) {
       console.error(`❌ Quantity input not found for product: ${productId}`);
