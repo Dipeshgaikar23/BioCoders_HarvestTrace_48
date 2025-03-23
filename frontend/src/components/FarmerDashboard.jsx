@@ -63,9 +63,9 @@ const FarmerDashboard = () => {
 
 const Orders = () => {
   const orders = [
-    { id: 1, product: "Tender Coconut", quantity: 2, total: 138 },
-    { id: 2, product: "Product 2", quantity: 1, total: 200 },
-    { id: 3, product: "Product 3", quantity: 3, total: 900 },
+    { id: 1, product: "Tender Coconut", quantity: 2, total: 80 },
+    { id: 2, product: "Tomatoes", quantity: "1kg", total: 110 },
+    { id: 3, product: "WaterMelon", quantity: 3, total: 300 },
   ];
 
   return (
