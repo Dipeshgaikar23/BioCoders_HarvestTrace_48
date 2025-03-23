@@ -142,7 +142,6 @@ const Marketplace = () => {
           // backgroundColor: "rgba(0, 0, 0, 0.60)",
         }}
       >
-        <img src="/vegitable-market.jpg" alt="" />
         <h1 className="fw-bold">Marketplace</h1>
         <p className="lead">Fresh from Farm to Your Table</p>
         <InputGroup className="w-50 mx-auto mt-3">
