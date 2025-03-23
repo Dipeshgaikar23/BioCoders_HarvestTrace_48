@@ -18,6 +18,7 @@ import FarmerDashboard from "./components/FarmerDashboard";
 import ProductCard from "./components/ProductCard";
 import "./app.css";
 import PaymentConfirmation from "./components/PaymentConfirmation";
+import PaymentGateway from "./components/PaymentGateway";
 
 // Home Page Layout
 const HomePage = () => (
@@ -69,7 +70,24 @@ const App = () => {
               }
             />
             <Route
-              path="/Payment"
+              path="/checkout"
+              element={
+                //map wala page
+                <AnimatedPage>
+                  <PaymentConfirmation />
+                </AnimatedPage>
+              }
+              />
+              <Route
+              path="/payment"
+              element={
+                <AnimatedPage>
+                  <PaymentGateway />
+                </AnimatedPage>
+              }
+            />
+            <Route
+              path="/paymentconfirmation"
               element={
                 <AnimatedPage>
                   <PaymentConfirmation />

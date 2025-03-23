@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Carousel } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+
 
 const ShoppingCart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const Navigate = useNavigate();
 
   // Fetch cart items from backend on component mount
   useEffect(() => {
@@ -179,6 +183,7 @@ const ShoppingCart = () => {
   const handlePlaceOrder = () => {
     // You can implement order placement functionality here
     alert('Order placed successfully!');
+    Navigate('/payment');
   };
 
   // Main container style with fixed 90% width and centered
