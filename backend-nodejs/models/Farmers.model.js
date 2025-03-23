@@ -9,7 +9,10 @@ const farmerSchema = new mongoose.Schema({
   address: { type: String, required: true },
   documents: [{ type: String, required: true }], // Array of file URLs
   verified: { type: Boolean, default: false },  // Admin approval status
-  certificateURL: { type: String, default: "" } // Digital certificate URL
+  certificateURL: { type: String, default: "" }, // Digital certificate URL
+  latitude: { type: Number, default: null }, // Coordinates for map
+  longitude: { type: Number, default: null },
+  verified: { type: Boolean, default: false },
 }, { timestamps: true });
 
 // 🔹 Hash password before saving to database

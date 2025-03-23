@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 
-const protect = require("../middleware/authMiddleware");
+// const protect = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -25,18 +25,28 @@ router.post("/register", upload.array("documents", 5), async (req, res) => {
     console.log("Request Body:", req.body); // Debugging Log
     console.log("Uploaded Files:", req.files); // Check if files are received
 
-    const { name, email, phone, address, password,} = req.body;
+    const { name, email, phone, address, password, latitude, longitude } = req.body;
     const documents = req.files.map(file => file.path); // Get file paths
 
-
-    if (!name || !phone || !password || !documents === 0 || !address) {
+    if (!name || !phone || !password || documents.length === 0 || !address) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     let farmer = await Farmer.findOne({ email });
     if (farmer) return res.status(400).json({ message: "Farmer already registered" });
 
-    farmer = new Farmer({ name, email, phone, password, address, documents });
+    // Create new farmer with latitude and longitude included
+    farmer = new Farmer({
+      name,
+      email,
+      phone,
+      password,
+      address,
+      documents,
+      latitude: latitude ? parseFloat(latitude) : null,
+      longitude: longitude ? parseFloat(longitude) : null
+    });
+    
     await farmer.save();
 
     res.status(201).json({ message: "Farmer registered successfully, pending approval" });

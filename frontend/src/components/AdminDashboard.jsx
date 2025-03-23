@@ -5,6 +5,7 @@ import {
   ShoppingCart,
   Eye,
   MoreVertical,
+  ShieldCheck,
   Vegan,
 } from "lucide-react";
 import axios from "axios";
@@ -17,6 +18,11 @@ const AdminDashboard = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedDocuments, setSelectedDocuments] = useState([]);
+  const [selectedFarmer, setSelectedFarmer] = useState(null);
+
+
 
   const token = localStorage.getItem("token");
 
@@ -25,40 +31,82 @@ const AdminDashboard = () => {
       try {
         setLoading(true);
 
-        // ✅ Fetch dashboard statistics
-        const statsRes = await axios.get("http://localhost:5000/ObviouslyNotAdmin/stats", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        // Track which requests are successful and which fail
+        const results = {
+          stats: null,
+          pendingFarmers: null,
+          consumers: null,
+          orders: null,
+          products: null,
+        };
 
-        // ✅ Fetch pending verifications
-        const farmersRes = await axios.get("http://localhost:5000/ObviouslyNotAdmin/pending-farmers", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        try {
+          // ✅ Fetch dashboard statistics
+          const statsRes = await axios.get("http://localhost:5000/ObviouslyNotAdmin/stats", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          results.stats = statsRes.data;
+          setDashboardStats(statsRes.data);
+        } catch (err) {
+          console.error("Failed to fetch stats:", err.message);
+        }
 
-        // ✅ Fetch all consumers
-        const consumersRes = await axios.get("http://localhost:5000/ObviouslyNotAdmin/consumers", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        try {
+          // ✅ Fetch pending verifications
+          const farmersRes = await axios.get("http://localhost:5000/ObviouslyNotAdmin/pending-farmers", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          results.pendingFarmers = farmersRes.data;
+          setVerifications(farmersRes.data);
+        } catch (err) {
+          console.error("Failed to fetch pending farmers:", err.message);
+        }
 
-        // ✅ Fetch all orders
-        const ordersRes = await axios.get("http://localhost:5000/orders/all", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        try {
+          // ✅ Fetch all consumers
+          const consumersRes = await axios.get("http://localhost:5000/ObviouslyNotAdmin/consumers", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          results.consumers = consumersRes.data;
+          setConsumers(consumersRes.data);
+        } catch (err) {
+          console.error("Failed to fetch consumers:", err.message);
+        }
 
-        // ✅ Fetch all products
-        const productsRes = await axios.get("http://localhost:5000/products/", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        try {
+          // ✅ Fetch all orders
+          const ordersRes = await axios.get("http://localhost:5000/orders/all", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          results.orders = ordersRes.data;
+          setOrders(ordersRes.data);
+        } catch (err) {
+          console.error("Failed to fetch orders:", err.message);
+        }
 
-        setDashboardStats(statsRes.data);
-        setVerifications(farmersRes.data);
-        setConsumers(consumersRes.data);
-        setOrders(ordersRes.data);
-        setProducts(productsRes.data);
+        try {
+          // ✅ Fetch all products
+          const productsRes = await axios.get("http://localhost:5000/products/", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          results.products = productsRes.data;
+          setProducts(productsRes.data);
+        } catch (err) {
+          console.error("Failed to fetch products:", err.message);
+        }
+
+        // Log the overall results to help diagnose which requests failed
+        console.log("API request results:", results);
+
+        // Set error state only if all requests failed
+        const allFailed = Object.values(results).every(result => result === null);
+        if (allFailed) {
+          setError("Failed to load all data. Check your network connection and API server.");
+        }
 
       } catch (error) {
         console.error("Dashboard Error:", error);
-        setError("Failed to load data.");
+        setError("Failed to load data: " + (error.response?.data?.message || error.message));
       } finally {
         setLoading(false);
       }
@@ -66,6 +114,20 @@ const AdminDashboard = () => {
 
     fetchData();
   }, [token]);
+
+  const handleApprove = async (id) => {
+    console.log("Approving ID:", id); // Debugging line
+    console.log("Type of ID:", typeof id);
+    try {
+      await axios.post(`http://localhost:5000/ObviouslyNotAdmin/approve/${id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setVerifications(verifications.filter(farmer => farmer._id !== id));
+    } catch (error) {
+      console.error("Approval Error:", error);
+    }
+  };
+
 
   if (loading) return <div className="text-center mt-5">Loading...</div>;
   if (error) return <div className="text-center text-danger mt-5">{error}</div>;
@@ -143,7 +205,6 @@ const AdminDashboard = () => {
               >
                 <tr>
                   <th>Farmer Name</th>
-                  <th>Farm Type</th>
                   <th>Location</th>
                   <th>Submitted Date</th>
                   <th>Status</th>
@@ -155,8 +216,7 @@ const AdminDashboard = () => {
                   verifications.map((verification) => (
                     <tr key={verification._id || verification.id}>
                       <td>{verification.name || verification.farmerName || "N/A"}</td>
-                      <td>{verification.farmType || "N/A"}</td>
-                      <td>{verification.location || "N/A"}</td>
+                      <td>{verification.address || "N/A"}</td>
                       <td>{verification.createdAt || verification.submitted || "N/A"}</td>
                       <td>
                         <span className="badge bg-warning">
@@ -164,11 +224,11 @@ const AdminDashboard = () => {
                         </span>
                       </td>
                       <td>
-                        <button className="btn btn-outline-dark btn-sm me-2">
+                        <button onClick={() => handleViewDocuments(verification)} className="btn btn-outline-dark btn-sm me-2">
                           <Eye size={16} />
                         </button>
-                        <button className="btn btn-outline-dark btn-sm">
-                          <MoreVertical size={16} />
+                        <button onClick={()=>handleApprove(verification._id)} className="btn btn-outline-dark btn-sm">
+                          <ShieldCheck size={16} />
                         </button>
                       </td>
                     </tr>
@@ -241,7 +301,7 @@ const AdminDashboard = () => {
                   <th>Buyer</th>
                   <th>Total Price</th>
                   <th>Status</th>
-                  <th>Actions</th>
+
                 </tr>
               </thead>
               <tbody>
@@ -255,20 +315,12 @@ const AdminDashboard = () => {
                           (typeof order.consumer === 'string' ? order.consumer : "N/A")}
                       </td>
                       <td>
-                        {order.totalPrice ? `$${order.totalPrice.toFixed(2)}` : "N/A"}
+                        {order.totalPrice ? `₹${order.totalPrice.toFixed(2)}` : "N/A"}
                       </td>
                       <td>
                         <span className={`badge ${order.status === 'Completed' ? 'bg-success' : 'bg-warning'}`}>
                           {order.status || "Pending"}
                         </span>
-                      </td>
-                      <td>
-                        <button className="btn btn-outline-dark btn-sm me-2">
-                          <Eye size={16} />
-                        </button>
-                        <button className="btn btn-outline-dark btn-sm">
-                          <MoreVertical size={16} />
-                        </button>
                       </td>
                     </tr>
                   ))
@@ -301,7 +353,6 @@ const AdminDashboard = () => {
                   <th>Farmer</th>
                   <th>Price</th>
                   <th>Available Quantity</th>
-                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -315,17 +366,9 @@ const AdminDashboard = () => {
                           (typeof product.farmer === 'string' ? product.farmer : "N/A")}
                       </td>
                       <td>
-                        {product.price ? `$${product.price.toFixed(2)}` : "N/A"}
+                        {product.price ? `₹${product.price.toFixed(2)}` : "N/A"}
                       </td>
                       <td>{product.quantity || "N/A"}</td>
-                      <td>
-                        <button className="btn btn-outline-dark btn-sm me-2">
-                          <Eye size={16} />
-                        </button>
-                        <button className="btn btn-outline-dark btn-sm">
-                          <MoreVertical size={16} />
-                        </button>
-                      </td>
                     </tr>
                   ))
                 ) : (
